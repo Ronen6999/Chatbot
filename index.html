@@ -1,57 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Interface</title>
-    <style>
-        #chat-container {
-            max-width: 400px;
-            margin: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        #chat-messages {
-            height: 300px;
-            overflow-y: scroll;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 10px;
-        }
-        #user-input {
-            width: 100%;
-            padding: 5px;
-        }
-    </style>
-</head>
-<body>
+function sendMessage() {
+    const userInput = document.getElementById('user-input').value;
+    const chatMessages = document.getElementById('chat-messages');
 
-<div id="chat-container">
-    <div id="chat-messages"></div>
-    <input type="text" id="user-input" placeholder="Type your message">
-    <button onclick="sendMessage()">Send</button>
-</div>
+    // Display user message
+    chatMessages.innerHTML += `<div>User: ${userInput}</div>`;
 
-<script>
-    function sendMessage() {
-        const userInput = document.getElementById('user-input').value;
-        const chatMessages = document.getElementById('chat-messages');
+    // Call the Brainshop API
+    const apiUrl = `http://api.brainshop.ai/get?bid=172563&key=NIjX07K5vYiKrWLN&uid=1&msg=${encodeURIComponent(userInput)}`;
 
-        // Display user message
-        chatMessages.innerHTML += `<div>User: ${userInput}</div>`;
-
-        // Call the Brainshop API
-        const apiUrl = `http://api.brainshop.ai/get?bid=172563&key=NIjX07K5vYiKrWLN&uid=1&msg=${encodeURIComponent(userInput)}`;
-
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                // Display chatbot response
-                chatMessages.innerHTML += `<div>Chatbot: ${data.cnt}</div>`;
-            })
-            .catch(error => console.error('Error:', error));
-    }
-</script>
-
-</body>
-</html>
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Display chatbot response
+            chatMessages.innerHTML += `<div>Chatbot: ${data.cnt}</div>`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            chatMessages.innerHTML += `<div>Error communicating with the chatbot. Please try again.</div>`;
+        });
+}
