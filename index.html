@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <style>
+        #chat-container {
+            width: 300px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        #user-input {
+            width: 80%;
+            padding: 5px;
+            margin-right: 5px;
+        }
+
+        #send-btn {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container"></div>
+    <div>
+        <input type="text" id="user-input" placeholder="Type your message">
+        <button id="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage !== '') {
+                appendMessage('user', userMessage);
+
+                // Replace 'YOUR_API_KEY' with the actual API key from Brainshop
+                const apiKey = 'YOUR_API_KEY';
+                const apiUrl = `https://api.brainshop.ai/get?bid=YOUR_BRAIN_ID&key=${apiKey}&uid=user123&msg=${encodeURIComponent(userMessage)}`;
+
+                // Make API request
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const botResponse = data.cnt;
+                        appendMessage('bot', botResponse);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        appendMessage('bot', 'Oops! Something went wrong.');
+                    });
+
+                // Clear user input
+                userInput.value = '';
+            }
+        }
+
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+            messageElement.textContent = message;
+            chatContainer.appendChild(messageElement);
+
+            // Scroll to the bottom to show the latest message
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
