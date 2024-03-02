@@ -79,8 +79,8 @@
             if (userInput.trim() !== '') {
                 displayMessage('user', userInput);
 
-                // Use BrainShop API function from the Quick Widget
-                var botResponse = brainShop.getQuickResponse(userInput);
+                // Use the BrainShop chatbot function
+                var botResponse = ACO.chat(userInput);
 
                 displayMessage('bot', botResponse);
                 document.getElementById('message-input').value = '';
