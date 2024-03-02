@@ -1,26 +1,107 @@
-function sendMessage() {
-    const userInput = document.getElementById('user-input').value;
-    const chatMessages = document.getElementById('chat-messages');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainShop Chatbot</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
-    // Display user message
-    chatMessages.innerHTML += `<div>User: ${userInput}</div>`;
+        #chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-    // Call the Brainshop API
-    const apiUrl = `http://api.brainshop.ai/get?bid=172563&key=NIjX07K5vYiKrWLN&uid=1&msg=${encodeURIComponent(userInput)}`;
+        #chat-header {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+        }
 
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
+        #chat-messages {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        #user-input {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #eee;
+        }
+
+        #message-input {
+            flex-grow: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #send-button {
+            margin-left: 10px;
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">BrainShop Chatbot</div>
+        <div id="chat-messages"></div>
+        <div id="user-input">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button id="send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('message-input').value;
+            if (userInput.trim() !== '') {
+                displayMessage('user', userInput);
+
+                // Call BrainShop API
+                var xhr = new XMLHttpRequest();
+                var apiUrl = 'http://api.brainshop.ai/get?bid=172563&key=NIjX07K5vYiKrWLN&uid=user123&msg=' + encodeURIComponent(userInput);
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var botResponse = JSON.parse(xhr.responseText).cnt;
+                        displayMessage('bot', botResponse);
+                    }
+                };
+
+                xhr.open('GET', apiUrl, true);
+                xhr.send();
+
+                document.getElementById('message-input').value = '';
             }
-            return response.json();
-        })
-        .then(data => {
-            // Display chatbot response
-            chatMessages.innerHTML += `<div>Chatbot: ${data.cnt}</div>`;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            chatMessages.innerHTML += `<div>Error communicating with the chatbot. Please try again.</div>`;
-        });
-}
+        }
+
+        function displayMessage(sender, message) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(sender);
+            messageElement.textContent = message;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
