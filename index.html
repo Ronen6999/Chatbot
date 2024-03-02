@@ -79,20 +79,10 @@
             if (userInput.trim() !== '') {
                 displayMessage('user', userInput);
 
-                // Call BrainShop API
-                var xhr = new XMLHttpRequest();
-                var apiUrl = 'http://api.brainshop.ai/get?bid=172563&key=NIjX07K5vYiKrWLN&uid=user123&msg=' + encodeURIComponent(userInput);
+                // Use BrainShop API function from the Quick Widget
+                var botResponse = brainShop.getQuickResponse(userInput);
 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var botResponse = JSON.parse(xhr.responseText).cnt;
-                        displayMessage('bot', botResponse);
-                    }
-                };
-
-                xhr.open('GET', apiUrl, true);
-                xhr.send();
-
+                displayMessage('bot', botResponse);
                 document.getElementById('message-input').value = '';
             }
         }
